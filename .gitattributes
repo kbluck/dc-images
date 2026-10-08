@@ -1,0 +1,70 @@
+####################################################################################################################################
+# Defines attributes for pathnames in a Git repository. Each line in the file consists of a pattern followed by a list of defined  #
+# attributes separated by whitespace. These attributes can control various aspects of how Git handles files, such as end-of-line   #
+# normalization, diff generation, and merge behavior. Notably, GitHub Linguist uses this file to determine the language of files   #
+# found within the repository, from which it attempts to generate syntax highlighting, language statistics, and merge behavior.    #
+# Note that all file names and extensions are written in a case-insensitive manner.                                                #
+#                                                                                                                                  #
+# Full documentation about gitattributes: https://git-scm.com/docs/gitattributes                                                   #
+#                                                                                                                                  #
+# Github Linguist includes its own extension grammar for .gitattributes files to render content on GitHub. Attributes include:     #
+#   `linguist-detectable`     Included in stats, even if language's type is data or prose                                          #
+#   `linguist-documentation`  Excluded from stats                                                                                  #
+#   `linguist-generated`      Excluded from stats, hidden in diffs                                                                 #
+#   `linguist-language=name`  Highlighted and classified as name                                                                   #
+#   `linguist-vendored`       Excluded from stats                                                                                  #
+#                                                                                                                                  #
+# The Github Linguist project: https://github.com/github-linguist                                                                  #
+#                                                                                                                                  #
+# There is a Github repository with a collection of gitattributes templates that provide a starting point to assemble a full       #
+# .gitattributes: https://github.com/gitattributes/gitattributes                                                                   #
+#                                                                                                                                  #
+# You can check the attributes of files in the repository using the git-check-attr command: `git check-attr --all <pathname>...`   #
+# Documentation about git-check-attr: https://git-scm.com/docs/git-check-attr                                                      #
+#                                                                                                                                  #
+# Reminder of line ending conventions:                                                                                             #
+# Linux and modern MacOS:  LF   "\n"   [ASCII code 10]                                                                             #
+# Windows:                 CRLF "\r\n" [ASCII codes 13 + 10]                                                                       #
+# Classic MacOS: (Rare)    CR   "\r"   [ASCII code 13]                                                                             #
+####################################################################################################################################
+
+# ident: Replaces $Id$ strings with a 40-character hex object name when checked out, and cleans it back to $Id$ upon commit.
+# merge: Defines the merge strategy or custom merge driver used when handling merge conflicts on a file (e.g., merge=union or a
+# custom named driver). Setting -merge prevents merging.
+# conflict-marker-size: Adjusts the size of conflict markers (<<<<<<< / >>>>>>>) for specific files by setting an integer value.
+# filter: Sets up external cleanup and smudging filters (such as filter=lfs for Git LFS) to process file contents during check-in
+# and check-out.
+# export-ignore: Excludes matching files and directories when creating archive tarballs or zip files via git archive.
+# export-subst: Expands placeholder keywords (like $Format:...$) inside the file during git archive exports.
+# binary: A built-in macro attribute shorthand equivalent to -text -diff -merge.
+# Git LFS Specific Attributes
+# lockable: Used by Git LFS to mark files as read-only in the working directory until explicitly locked via git lfs lock.
+
+# Set default behavior.
+* eol=lf
+* text=auto delta diff merge conflict-marker-size=7
+* encoding=utf8 working-tree-encoding=utf8
+* whitespace=-blank-at-eof,blank-at-eol,space-before-tab,tab-in-indent,trailing-space,tabwidth=2
+* linguist-detectable -linguist-documentation -linguist-generated -linguist-language -linguist-vendored
+* -export-ignore -export-subst
+
+# Add customization to Markdown.
+*.[Mm][Dd] text diff=markdown linguist-language=markdown
+
+# Add customization to various configuration file types.
+.[Gg][Ii][Tt][Aa][Tt][Tt][Rr][Ii][Bb][Uu][Tt][Ee][Ss] text export-ignore linguist-language=gitattributes
+.[Gg][Ii][Tt][Ii][Gg][Nn][Oo][Rr][Ee]                 text export-ignore linguist-language=gitignore
+.[Ee][Dd][Ii][Tt][Oo][Rr][Cc][Oo][Nn][Ff][Ii][Gg]     text export-ignore linguist-language=editorconfig
+
+# Treat standard .json files as JSON with Comments (jsonc) without flagging comments as syntax errors.
+# https://jsonc.org/
+*.[Jj][Ss][Oo][Nn]     text linguist-language=jsonc
+*.[Jj][Ss][Oo][Nn][Cc] text linguist-language=jsonc
+
+# Mark IDE cruft as vendored.
+.[Ii][Dd][Ee][Aa]/**/*         export-ignore linguist-vendored
+.[Vv][Ss][Cc][Oo][Dd][Ee]/**/* export-ignore linguist-vendored
+.[Vv][Ss]/**/*                 export-ignore linguist-vendored
+
+# POSIX shell scripts
+*.[Ss][Hh] text diff=bash linguist-language=sh
